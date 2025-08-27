@@ -5,7 +5,6 @@ export function presentFarmer(f: Farmer): FarmerHttp {
   const { id, props } = f;
   return {
     id,
-    _id: id,
     fullName: props.fullName,
     cpf: props.cpf,
     birthDate: props.birthDate ? props.birthDate.toISOString() : null,

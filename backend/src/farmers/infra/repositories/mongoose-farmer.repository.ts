@@ -1,11 +1,21 @@
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, FilterQuery } from 'mongoose';
 import { Farmer } from '../../domain/entities/farmer';
 import { FarmerRepository } from '../../domain/repositories/farmer.repository';
 import { FarmerModel, FarmerDocument } from '../schemas/farmer.schema';
 
+function normalizeCpf(v?: string) {
+  return (v ?? '').replace(/\D/g, '');
+}
+function escapeRegex(s: string) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 export class MongooseFarmerRepository implements FarmerRepository {
-  constructor(@InjectModel(FarmerModel.name) private readonly model: Model<FarmerDocument>) {}
+  constructor(
+    @InjectModel(FarmerModel.name)
+    private readonly model: Model<FarmerDocument>,
+  ) {}
 
   private toEntity(doc: FarmerDocument): Farmer {
     return new Farmer(doc._id.toString(), {
@@ -18,7 +28,11 @@ export class MongooseFarmerRepository implements FarmerRepository {
   }
 
   async create(data: Omit<Farmer['props'], 'active'> & { active?: boolean }): Promise<Farmer> {
-    const created = await this.model.create({ ...data, active: data.active ?? true });
+    const created = await this.model.create({
+      ...data,
+      cpf: normalizeCpf((data as any).cpf),
+      active: data.active ?? true,
+    });
     return this.toEntity(created);
   }
 
@@ -28,7 +42,8 @@ export class MongooseFarmerRepository implements FarmerRepository {
   }
 
   async findByCPF(cpf: string): Promise<Farmer | null> {
-    const doc = await this.model.findOne({ cpf }).exec();
+    const digits = normalizeCpf(cpf);
+    const doc = await this.model.findOne({ cpf: digits }).exec();
     return doc ? this.toEntity(doc) : null;
   }
 
@@ -42,11 +57,29 @@ export class MongooseFarmerRepository implements FarmerRepository {
   }
 
   async list(filters: { name?: string; cpf?: string; active?: boolean }): Promise<Farmer[]> {
-    const q: any = {};
-    if (filters.name) q.fullName = { $regex: filters.name, $options: 'i' };
-    if (filters.cpf) q.cpf = filters.cpf;
-    if (typeof filters.active === 'boolean') q.active = filters.active;
-    const docs = await this.model.find(q).sort({ fullName: 1 }).exec();
+    const q: FilterQuery<FarmerDocument> = {};
+
+    if (filters.name?.trim()) {
+      q.fullName = {
+        $regex: new RegExp(escapeRegex(filters.name.trim()), 'i'),
+      };
+    }
+
+    if (filters.cpf) {
+      const digits = normalizeCpf(filters.cpf).slice(0, 11);
+      if (digits.length === 11) {
+        q.cpf = digits;
+      } else if (digits.length > 0) {
+        q.cpf = { $regex: new RegExp(`^${escapeRegex(digits)}`) };
+      }
+    }
+
+    if (typeof filters.active === 'boolean') {
+      q.active = filters.active;
+    }
+
+    const docs = await this.model.find(q).sort({ fullName: 1 }).limit(200).exec();
+
     return docs.map((d) => this.toEntity(d));
   }
 }

@@ -9,8 +9,8 @@ type Farmer = {
   _id?: string;
   id?: string;
   fullName: string;
-  cpf: string;          
-  birthDate?: string;
+  cpf: string;      
+  birthDate?: string;  
   phone?: string;
   active: boolean;
 };
@@ -27,6 +27,15 @@ function formatCPF(value: string): string {
   if (p3) out += '.' + p3;
   if (p4) out += '-' + p4;
   return out;
+}
+
+function formatBirthBR(iso?: string) {
+  if (!iso) return '-';
+  const s = String(iso);
+  const ymd = s.length >= 10 ? s.slice(0, 10) : s;
+  const [y, m, d] = ymd.split('-');
+  if (!y || !m || !d) return '-';
+  return `${d}/${m}/${y}`;
 }
 
 function getErrorMessage(err: unknown): string {
@@ -53,7 +62,7 @@ export default function FarmersTable() {
   const query = useMemo(() => {
     const q = new URLSearchParams();
     if (name) q.set('name', name);
-    if (cpfDigits) q.set('cpf', cpfDigits); 
+    if (cpfDigits) q.set('cpf', cpfDigits);
     if (active) q.set('active', active);
     return q.toString();
   }, [name, cpfDigits, active]);
@@ -128,8 +137,8 @@ export default function FarmersTable() {
         <div className="max-w-xl w-full">
           <input
             className={`input w-full ${cpfError ? 'is-error' : ''}`}
-            placeholder="Filtrar por CPF (opcional · Colocar CPF completo)"
-            value={formatCPF(cpfDigits)}           
+            placeholder="Filtrar por CPF (opcional · máximo 11 dígitos)"
+            value={formatCPF(cpfDigits)} 
             onChange={onChangeCpfFilter}
             inputMode="numeric"
           />
@@ -179,10 +188,8 @@ export default function FarmersTable() {
               return (
                 <tr key={id}>
                   <td className="px-3">{f.fullName}</td>
-                  <td className="px-3">{formatCPF(f.cpf)}</td> 
-                  <td className="px-3">
-                    {f.birthDate ? new Date(f.birthDate).toLocaleDateString() : '-'}
-                  </td>
+                  <td className="px-3">{formatCPF(f.cpf)}</td>
+                  <td className="px-3">{formatBirthBR(f.birthDate)}</td>
                   <td className="px-3">{f.phone || '-'}</td>
 
                   <td className="px-3 text-left whitespace-nowrap">
@@ -193,7 +200,7 @@ export default function FarmersTable() {
                     <div className="flex justify-start gap-2 whitespace-nowrap">
                       {f.cpf ? (
                         <Link
-                          href={`/farmers/${encodeURIComponent(normalizeCPF(f.cpf))}`} 
+                          href={`/farmers/${encodeURIComponent(normalizeCPF(f.cpf))}`}
                           className="btn secondary"
                           prefetch={false}
                         >

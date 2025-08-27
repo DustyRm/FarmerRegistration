@@ -91,3 +91,5 @@ npm run lint && npm run format
 cd frontend
 npm run lint && npm run format
 ```
+## Observações rápidas
+- Caso fique vermelho os imports se rodar pelo docker, provavelmente é o editor não enxergando o `node_modules` porque ele está dentro do container. 

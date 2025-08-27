@@ -11,7 +11,7 @@ Inclui **Docker**, **ESLint**, **Prettier** e **Swagger**.
 - **Lint/Format**: ESLint + Prettier
 
 ## 📦 Como rodar (Docker)
-Crie um `.env` na raiz ou use o `.env.example` como base.
+Crie um `.env` na raiz usando o exemplo abaixo.
 
 ```bash
 MONGO_INITDB_DATABASE=agri_registry
@@ -26,6 +26,21 @@ Depois
 
 ```bash
 docker compose up --build
+```
+OU
+
+## (sem Docker)
+### Backend
+```bash
+cd backend
+npm i
+npm run start:dev
+```
+### Frontend
+```bash
+cd frontend
+npm i
+npm run dev
 ```
 
 - API: http://localhost:8080
@@ -57,19 +72,6 @@ agri-registry/
 - **RN5**: Exclusão só é permitida se `active === false`.
 - **RN6**: Listagem com filtros por `nome`, `cpf` e `status` + ações por linha (editar/excluir).
 
-## 🧪 Teste rápido (sem Docker)
-### Backend
-```bash
-cd backend
-npm i
-npm run start:dev
-```
-### Frontend
-```bash
-cd frontend
-npm i
-npm run dev
-```
 ## 📜 API (Swagger)
 Acesse **/docs** na API para ver os endpoints.
 - `POST /farmers` (criar)

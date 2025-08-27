@@ -81,10 +81,11 @@ Acesse **/docs** na API para ver os endpoints.
 ## 🧹 Lint / Format
 ```bash
 # backend
-npm run lint && npm run format
-# frontend
+cd backend
 npm run lint && npm run format
 ```
-
-## 📨 Envio
-Crie um repositório público e empurre este código. Opcionalmente ajuste o README.
+```bash
+# frontend
+cd frontend
+npm run lint && npm run format
+```

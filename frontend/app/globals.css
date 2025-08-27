@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base / Tema */
+@layer base {
+  :root{
+    --bg:#0f1419; --surface:#121823; --border:#2b3340;
+    --fg:#eaecee; --muted:#aab3c5; --brand:#07a27e; --brand-600:#089b78; --danger:#ef4444;
+  }
+  html{ scroll-behavior:smooth; }
+  body{ @apply antialiased; background: var(--bg); color: var(--fg); min-height:100vh; }
+  h1{ @apply text-3xl md:text-4xl font-bold tracking-tight mb-4; }
+  h2{ @apply text-2xl md:text-3xl font-semibold tracking-tight mb-3; }
+  a{ @apply underline underline-offset-2 decoration-white/20 hover:decoration-white; }
+}
+
+/* Components */
+@layer components {
+  .container{ @apply max-w-6xl mx-auto px-6 py-6; }
+  .card{ @apply rounded-xl p-5 shadow-md backdrop-blur-sm; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); }
+
+  .btn{ @apply inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/60 focus-visible:ring-offset-2 ring-offset-black disabled:opacity-50 disabled:cursor-not-allowed; background: var(--brand); color:#00120d; }
+  .btn:hover{ background: var(--brand-600); }
+  .btn.secondary{ @apply bg-[#2b3340] text-[#d7dee7]; }
+  .btn.secondary:hover{ @apply bg-[#3a4352]; }
+
+  .label{ @apply text-sm font-medium text-[var(--muted)] mb-1 block; }
+
+  .input, .select, .textarea{
+    @apply w-full rounded-lg px-3 py-2 text-sm transition-colors;
+    background:#0b0f14; border:1px solid var(--border); color:var(--fg);
+  }
+  .input:focus, .select:focus, .textarea:focus{
+    @apply outline-none ring-2 ring-emerald-400/40; border-color:#34d39980;
+  }
+  .is-error{ border-color: var(--danger) !important; box-shadow: 0 0 0 2px rgba(239,68,68,.25); }
+  .error{ @apply mt-1 text-xs; color: var(--danger); }
+  .hint{ @apply mt-1 text-xs text-[var(--muted)]; }
+
+  .table-container{ @apply overflow-x-auto rounded-xl border border-white/10; }
+  .table{ @apply min-w-full text-sm; }
+  .table thead th{ @apply bg-white/5 text-left font-semibold px-4 py-2; }
+  .table tbody tr{ @apply hover:bg-white/5 transition-colors; }
+  .table th, .table td{ @apply border-b border-[var(--border)] px-4 py-2 align-middle; }
+}
